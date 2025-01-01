@@ -113,7 +113,7 @@ tg_send() {
     # tg_debug='n' only outputs a compact json summary
     if [[ "$update" = 'update' ]]; then
       # update an existing message_id
-      append_text="[msgid: $input_msgid Updated: $(date +"%a %d-%b-%y %T %Z")]  $message"
+      append_text="[$(date +"%d/%m/%y-%T")]  $message"
       tg_type='editMessageText'
       msgchar_count=$(echo $append_text | wc -m)
       # calculate number of 4090 character messages needed to
@@ -132,7 +132,7 @@ tg_send() {
     if [[ "$tg_addmsgid" = [yY] && "$update" != 'update' ]]; then
       # append message_id to newly sent messages to make it easier to track messages
       # and be able to edit and update existing messages in future
-      append_text="[msgid: $msgid] $message"
+      append_text="$message"
       tg_type='editMessageText'
       msgchar_count=$(echo $append_text | wc -m)
       # calculate number of 4090 character messages needed to
@@ -140,7 +140,7 @@ tg_send() {
       msg_count=$(echo "($(echo "$append_text" | wc -m)+4090-1) / 4090" | bc)
       json_output=$(curl -4s --connect-timeout $tg_timeout --max-time $tg_timeout -X POST "$tgapi/${tg_type}"${notify_opt}${webpreview_opt}${format_opt} -d message_id="$msgid" -d chat_id="$tgchatid" -d text="$append_text" |  jq -r)
     fi
-    echo "$json_output" | jq -r '.result | {from: .from.first_name, to: .chat.first_name, date: .edit_date | todate, message: .text }'
+#    echo "$json_output" | jq -r '.result | {from: .from.first_name, to: .chat.first_name, date: .edit_date | todate, message: .text }'
   fi
 }
 
